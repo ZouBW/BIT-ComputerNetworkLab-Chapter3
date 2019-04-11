@@ -12,10 +12,10 @@ public class Crc
     public static String s  ="10001000000100001" ;
 	public static  StringBuffer poly =new StringBuffer(s);
 	public Crc() throws IOException {
-		ReadIniFile rf = new ReadIniFile(path);
-		Map<String, String> map = rf.readFile();
-		s = map.get("crc");
-		poly = new StringBuffer(s);
+		//ReadIniFile rf = new ReadIniFile(path);
+		//Map<String, String> map = rf.readFile();
+		//s = map.get("crc");
+		//poly = new StringBuffer(s);
 		
 	}
 	

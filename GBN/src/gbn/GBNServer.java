@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 import timerPackage.Model;
 import timerPackage.Timer;
@@ -17,9 +18,9 @@ import tool.ReadIniFile;
  * 服务器端
  */
 public class GBNServer extends Thread{
-	private String path = ".\\bin\\Server.ini";
-    private  int portReceive ;
-    private  int portSend ;
+	private String path = "E:\\\\\\\\NetworkExperiment\\\\\\\\computer-network-lab-code\\\\\\\\chapter 3\\\\\\\\lab4\\\\\\\\java\\\\\\\\bin\\Server.ini";
+    private  int portReceive = 8888 ;
+    private  int portSend = 8800;
     private int FilterError ;
     private int FilterLost ;
     private DatagramSocket datagramSocket;
@@ -40,8 +41,17 @@ public class GBNServer extends Thread{
     	this.gbnServer = a;
     }
     public GBNServer()  throws Exception {
+    	Scanner sc = new Scanner(System.in);
     	
+    	System.out.println("请输入服务器配置文件路径(使用默认配置请直接回车)：");
+    	String p = sc.nextLine();
+    	
+    	if(!p.contentEquals("")) {
+    		System.out.println("输入的文件路径为:" + p);
+    		path = p;
+    	}
     	ReadIniFile rf = new ReadIniFile(path);
+    		
     	Map<String,String> map = ReadIniFile.readFile();
     	
     	portReceive = Integer.parseInt(map.get("portReceive"));
@@ -57,7 +67,7 @@ public class GBNServer extends Thread{
         timer.start();
         gbnServer = new GBNServer(this);
         gbnServer.start();
-        Thread.sleep(5000);
+        Thread.sleep(3000);
         while(true){
             //向客户端端发送数据
             sendData();
@@ -86,7 +96,7 @@ public class GBNServer extends Thread{
 	public void run() {
 		// TODO Auto-generated method stub
     	//接收客户端数据
-    	System.out.println("监听客户端是否发送数据");
+    	System.out.println("监听客户端线程启动\n");
     	 try {
              datagramSocket = new DatagramSocket(portReceive);
              while (true) {
@@ -96,7 +106,7 @@ public class GBNServer extends Thread{
                  //收到的数据
                  String received = new String(datagramPacket.getData()).trim();
                  String[] info = received.split("-");
-                 System.out.println(received);
+                 //System.out.println(received);
                  
                  if(Integer.parseInt(info[0]) == exceptedSeq) {
                 	 StringBuffer sb = new StringBuffer(info[1] + info[2]);
@@ -109,8 +119,8 @@ public class GBNServer extends Thread{
                     	 //此时数据正确
                     	 System.out.println("----------------CRC校验通----------------");
                     	 sendAck(exceptedSeq);
-                    	 System.out.println("服务器期待的数据编号: " + exceptedSeq);
-                    	 System.out.println("客户端发送帧的序号为: " + info[0] + ",客户端发送的数据为 " + info[1]);
+                    	 
+                    	 System.out.println("[Data](Client ---> Server) 客户端发送帧的序号为: " + info[0] + ",客户端发送的数据为 " + info[1] + "服务器期待的数据编号: " + exceptedSeq);
                     	 exceptedSeq++;
                     	 System.out.println();
                      }else {

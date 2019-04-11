@@ -11,12 +11,13 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * 客户端
  */
 public class GBNClient extends Thread{
-	private String path = ".\\bin\\Client.ini";
+	private String path = "E:\\\\NetworkExperiment\\\\computer-network-lab-code\\\\chapter 3\\\\lab4\\\\java\\\\bin\\Client.ini";
     private int portSend = 8888;
     private int portReceive = 8800;
     private int FilterError = 10;
@@ -44,8 +45,15 @@ public class GBNClient extends Thread{
     }
     public GBNClient() throws Exception 
     {
+    	Scanner sc = new Scanner(System.in);
+    	System.out.println("请输入客户端配置文件路径((使用默认配置请直接 回车)):");
     	
-    	ReadIniFile rf = new ReadIniFile(path);
+    	String p = sc.nextLine();
+    	if(!p.equals("")) {
+    		System.out.println("输入的文件路径为:" + p);
+    		path = p;
+    	}
+    	ReadIniFile rf = new ReadIniFile(path); 
     	Map<String,String> map = ReadIniFile.readFile();
     	portReceive = Integer.parseInt(map.get("portReceive"));
     	portSend = Integer.parseInt(map.get("portSend"));
@@ -90,6 +98,7 @@ public class GBNClient extends Thread{
 	public void run() {
     	//接收数据8800
 		// TODO Auto-generated method stub
+    	System.out.println("监听服务器线程启动\n");
     	 try {
              datagramSocket = new DatagramSocket(portReceive);
              while (true) {
@@ -109,15 +118,15 @@ public class GBNClient extends Thread{
                 		 sb= new StringBuffer(info[1] +info[2]);
                 	 
                      String check = Crc.crc_check(sb);
-                     System.out.println("check ==" + check);
+                     //System.out.println("check ==" + check);
                      int pos = check.indexOf("1");
-                     System.out.println("pos ==" + pos);
+                     //System.out.println("pos ==" + pos);
                      if(pos == -1) {
                     	 //此时数据正确
                     	 sendAck(exceptedSeq);
                     	 System.out.println("----------------CRC校验通----------------");
-                    	 System.out.println("客户端期待的数据编号: " + exceptedSeq);
-                    	 System.out.println("服务器发送帧的序号为: " + info[0] + ",服务器发送的数据为 " + info[1]);
+                    	 
+                    	 System.out.println("[Data](Server ----> Client) 服务器发送帧的序号为: " + info[0] + ",服务器发送的数据为 " + info[1] + "客户端期待的数据编号: " + exceptedSeq);
                     	 exceptedSeq++;
                     	 System.out.println();
                      }else {
